@@ -1,0 +1,11 @@
+.card img{
+	max-height: 200px;
+}
+.price{
+	font-weight: bold;
+	font-size: 15px;
+}
+.row{
+	margin: 10px;
+	display: flex;
+}
