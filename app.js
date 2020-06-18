@@ -3,10 +3,16 @@ var app = express();
 var hbs = require("express-handlebars");
 var bodyParser = require("body-parser")
 var logger = require("morgan");
+var mongoose = require("mongoose");
+var Book = require("./models/book");
+var seedDB = require("./seed");
 
-
+seedDB();
 //require routes
 var indexRoutes = require("./routes/index");
+//database
+mongoose.connect("mongodb://localhost/cart", { useNewUrlParser: true, useUnifiedTopology: true });
+
 //view engine setup
 app.engine("hbs", hbs({defaultLayout: "layout", extname:".hbs"}));
 //app.set("views", path.join(__dirname, "views"));
