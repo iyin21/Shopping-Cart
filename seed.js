@@ -5,38 +5,38 @@ var Book = require("./models/book");
 var data = [
 	{
 		image: "https://i.pinimg.com/474x/e1/06/02/e1060277ef050d22c72726d0cae595d1.jpg",
-		title: "Apple",
-		description: "This is good",
+		title: "The arrival of someday",
+		description: "A well written memoir",
 		price: 39	
 	},
 	{
 		image: "https://i.pinimg.com/474x/de/0d/b6/de0db68999067d061bda491590bb80e7.jpg",
 		title: "Apple",
-		description:"This is good",
+		description:"Award winning book",
 		price: 20	
 	},
 	{
 		image: "https://i.pinimg.com/474x/b9/f5/2b/b9f52bbfd0d9ac38eee4a707b536eb05.jpg",
-		title: "bookcover",
-		description: "This is good",
+		title: "Dead man in a ditch",
+		description: "Bold coloring, fun typography and intriguing",
 		price: 35	
 	},
 	{
 		image: "https://i.pinimg.com/474x/77/6a/6f/776a6f3c3738e266ab213c1771d6d996.jpg",
-		title: "bookcover",
-		description: "This is good",
+		title: "New waves",
+		description: "An amazing novel",
 		price: 40	
 	},
 	{
-		image: "https://i.pinimg.com/474x/e1/06/02/e1060277ef050d22c72726d0cae595d1.jpg",
-		title: "bookcover",
-		description: "This is good",
+		image: "https://i.pinimg.com/564x/ea/f1/ef/eaf1ef57a0245da961351fba691fe5b8.jpg",
+		title: "The woman in the green dress",
+		description: "The enthralling novel from the acclaimed author of Look closer",
 		price: 50	
 	},
 	{
 		image: "https://i.pinimg.com/474x/61/65/6a/61656aa79188996aa2c9e4f91e7b1a6d.jpg",
-		title: "bookcover",
-		description: "This is good",
+		title: "A river in darkness",
+		description: "National bestseller",
 		price: 20	
 	}
 ];

@@ -6,12 +6,13 @@ var logger = require("morgan");
 var mongoose = require("mongoose");
 var Book = require("./models/book");
 var seedDB = require("./seed");
+//npm cache clean --force
 
 seedDB();
 //require routes
 var indexRoutes = require("./routes/index");
 //database
-mongoose.connect("mongodb://localhost/cart", { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect("mongodb://localhost/cart", { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true });
 
 //view engine setup
 app.engine("hbs", hbs({defaultLayout: "layout", extname:".hbs"}));

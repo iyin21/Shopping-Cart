@@ -3,7 +3,7 @@ var router = express.Router();
 var Book = require("../models/book");
 
 router.get("/", function(req, res){
-	Book.find(function(err, books){
+	Book.find({}).lean().exec(function(err, books){
 		if(err){
 			console.log(err);
 		}else{
