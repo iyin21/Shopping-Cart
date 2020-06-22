@@ -4,6 +4,7 @@ var hbs = require("express-handlebars");
 var bodyParser = require("body-parser")
 var logger = require("morgan");
 var mongoose = require("mongoose");
+var session = require("express-session");
 var Book = require("./models/book");
 var seedDB = require("./seed");
 //npm cache clean --force
@@ -24,7 +25,13 @@ app.use(bodyParser.urlencoded({extended : true}));
 app.use(logger("dev"));
 //public directory
 app.use(express.static(__dirname +"/public"));
+//Handle express-session
+app.use(session({
+	secret: "It is mine",
+	resave: false,
+	saveUninitialized: false
 
+}));
 
 app.use("/", indexRoutes);
 
