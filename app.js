@@ -2,10 +2,14 @@ var express= require("express");
 var app = express();
 var hbs = require("express-handlebars");
 var bodyParser = require("body-parser")
+var passport = require("passport");
+var LocalStrategy = require("passport-local");
+var passportLocalMongoose = require("passport-local-mongoose");
 var logger = require("morgan");
 var mongoose = require("mongoose");
 var session = require("express-session");
 var Book = require("./models/book");
+var User = require("./models/user");
 var seedDB = require("./seed");
 //npm cache clean --force
 
@@ -32,6 +36,13 @@ app.use(session({
 	saveUninitialized: false
 
 }));
+//configure passport
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.serializeUser(User.serializeUser);
+passport.deserializeUser(User.deserializeUser);
+passport.use(User.createStrategy());
 
 app.use("/", indexRoutes);
 
