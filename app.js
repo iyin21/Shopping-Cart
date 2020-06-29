@@ -8,6 +8,7 @@ var passportLocalMongoose = require("passport-local-mongoose");
 var logger = require("morgan");
 var mongoose = require("mongoose");
 var session = require("express-session");
+var flash = require("connect-flash");
 var Book = require("./models/book");
 var User = require("./models/user");
 var seedDB = require("./seed");
@@ -36,13 +37,22 @@ app.use(session({
 	saveUninitialized: false
 
 }));
+app.use(flash());
 //configure passport
 app.use(passport.initialize());
 app.use(passport.session());
 
 passport.serializeUser(User.serializeUser);
 passport.deserializeUser(User.deserializeUser);
-passport.use(User.createStrategy());
+passport.use(new LocalStrategy({
+	usernameField: 'email'
+}, User.createStrategy()));
+
+app.use(function(req, res, next){
+	res.locals.error = req.flash("error");
+	res.locals.errors = req.flash("errors");
+	next();
+});
 
 app.use("/", indexRoutes);
 

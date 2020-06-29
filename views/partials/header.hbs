@@ -30,3 +30,19 @@
     </ul>
   </div>
 </nav>
+<div class="container">
+  {{#if hasErrors}}
+    <div class="alert alert-danger" role="alert">
+      {{#each error}}
+        <p>{{this}}</p>
+      {{/each}}  
+    </div>
+  {{/if}}    
+  {{#if hasError}}
+    <div class="alert alert-danger" role="alert">
+      {{#each errors}}
+        <p>{{this}}</p>
+      {{/each}}  
+    </div>
+  {{/if}}
+</div>
