@@ -1,13 +1,13 @@
 var express= require("express");
 var app = express();
 var hbs = require("express-handlebars");
-var bodyParser = require("body-parser")
+var bodyParser = require("body-parser");
+var session = require("express-session");
 var passport = require("passport");
 var LocalStrategy = require("passport-local");
 var passportLocalMongoose = require("passport-local-mongoose");
 var logger = require("morgan");
 var mongoose = require("mongoose");
-var session = require("express-session");
 var flash = require("connect-flash");
 var Book = require("./models/book");
 var User = require("./models/user");

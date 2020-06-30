@@ -31,18 +31,16 @@
   </div>
 </nav>
 <div class="container">
-  {{#if hasErrors}}
+  {{#if error}}
     <div class="alert alert-danger" role="alert">
       {{#each error}}
         <p>{{this}}</p>
       {{/each}}  
     </div>
   {{/if}}    
-  {{#if hasError}}
+  {{#if errors}}
     <div class="alert alert-danger" role="alert">
-      {{#each errors}}
-        <p>{{this}}</p>
-      {{/each}}  
+      {{errors}}
     </div>
   {{/if}}
 </div>
