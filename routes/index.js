@@ -19,6 +19,19 @@ router.get("/", function(req, res){
 	});
 });
 
+router.get("/profile", isLoggedIn, function(req, res){
+	res.render("profile");
+});
+
+router.get("/signout", isLoggedIn, function(req, res){
+	req.logout();
+	res.redirect("/");
+});
+
+router.use('/', notLoggedIn, function(req, res, next){
+	next();
+});
+
 router.get("/signup", function(req, res){
 	res.render("signup",{csrfToken: req.csrfToken()});
 });
@@ -56,18 +69,31 @@ router.post("/signup", [body("email", "Invalid email").isEmail(), body("password
 	}
 	
 });
-router.get("/signin", function(req, res, next){
+router.get("/signin", function(req, res){
 	res.render("signin", {csrfToken: req.csrfToken()})
 })
 router.post("/signin", passport.authenticate("local",
 	{
 		successRedirect: "/profile",
-		failureRedirect: "/signin"
+		failureRedirect: "/signin",
+		failureFlash: true
 }), function(req, res){
 
 });
 
-router.get("/profile", function(req, res){
-	res.render("profile");
-});
+
+function isLoggedIn(req, res, next){
+	if (req.isAuthenticated()){
+		return next();
+	}
+	req.flash("errors", "Please sign in first");
+	res.redirect('/signin');
+}
+
+function notLoggedIn(req, res, next){
+	if(!req.isAuthenticated()){
+		return next();
+	}
+	res.redirect("/");
+}
 module.exports = router;

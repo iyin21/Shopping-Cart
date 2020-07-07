@@ -4,7 +4,7 @@ var hbs = require("express-handlebars");
 var bodyParser = require("body-parser");
 var session = require("express-session");
 var passport = require("passport");
-var LocalStrategy = require("passport-local");
+var LocalStrategy = require("passport-local").Strategy;
 var passportLocalMongoose = require("passport-local-mongoose");
 var logger = require("morgan");
 var mongoose = require("mongoose");
@@ -26,7 +26,7 @@ app.engine("hbs", hbs({defaultLayout: "layout", extname:".hbs"}));
 app.set("view engine", ".hbs");
 //bodyparser setup
 app.use(bodyParser.urlencoded({extended : true}));
-//setup morgan
+//setup morgan 
 app.use(logger("dev"));
 //public directory
 app.use(express.static(__dirname +"/public"));
@@ -42,13 +42,17 @@ app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 
-passport.serializeUser(User.serializeUser);
-passport.deserializeUser(User.deserializeUser);
-passport.use(new LocalStrategy({
-	usernameField: 'email'
-}, User.createStrategy()));
+passport.use(User.createStrategy());
+// passport.use(new LocalStrategy({
+// 	usernameField: 'email',
+// 	//passwordField: "password"
+// }, User.createStrategy()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
 
 app.use(function(req, res, next){
+	res.locals.currentUser = req.user;
 	res.locals.error = req.flash("error");
 	res.locals.errors = req.flash("errors");
 	next();
