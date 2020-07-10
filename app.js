@@ -9,6 +9,7 @@ var passportLocalMongoose = require("passport-local-mongoose");
 var logger = require("morgan");
 var mongoose = require("mongoose");
 var flash = require("connect-flash");
+var MongoStore = require("connect-mongo")(session);
 var Book = require("./models/book");
 var User = require("./models/user");
 var seedDB = require("./seed");
@@ -17,6 +18,7 @@ var seedDB = require("./seed");
 seedDB();
 //require routes
 var indexRoutes = require("./routes/index");
+var userRoutes = require("./routes/users")
 //database
 mongoose.connect("mongodb://localhost/cart", { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true });
 
@@ -34,8 +36,9 @@ app.use(express.static(__dirname +"/public"));
 app.use(session({
 	secret: "It is mine",
 	resave: false,
-	saveUninitialized: false
-
+	saveUninitialized: false,
+	store: new MongoStore({mongooseConnection: mongoose.connection}),
+	cookie: { maxAge: 180 * 60 * 1000}
 }));
 app.use(flash());
 //configure passport
@@ -53,12 +56,15 @@ passport.deserializeUser(User.deserializeUser());
 
 app.use(function(req, res, next){
 	res.locals.currentUser = req.user;
+	res.locals.session = req.session;
 	res.locals.error = req.flash("error");
 	res.locals.errors = req.flash("errors");
 	next();
 });
 
+app.use("/users", userRoutes);
 app.use("/", indexRoutes);
+
 
 app.listen("3000", function(){
 	console.log("App running");
