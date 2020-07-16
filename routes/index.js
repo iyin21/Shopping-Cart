@@ -15,7 +15,7 @@ router.get("/", function(req, res){
 		if(err){
 			console.log(err);
 		}else{
-			res.render("cart/index", {title: "Shopping Cart", books: books})
+			res.render("shop/index", {title: "Shopping Cart", books: books})
 		}	
 	});
 });
@@ -34,6 +34,13 @@ router.get("/add-to-cart/:id", function(req, res){
 		res.redirect("/")
 
 	});
+});
+router.get("/shopping-cart", function(req, res){
+	if("!req.session.cart"){
+		return res.render("shop/shopping-cart", {books:null})
+	}
+	 var cart = new Cart(req.session.cart);
+	 return res.render("shop/shopping-cart", {books: cart.generateArray(), totalPrice: cart.totalPrice})
 });
 
 

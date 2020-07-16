@@ -12,6 +12,7 @@ var flash = require("connect-flash");
 var MongoStore = require("connect-mongo")(session);
 var Book = require("./models/book");
 var User = require("./models/user");
+var Cart = require("./models/cart");
 var seedDB = require("./seed");
 //npm cache clean --force
 
