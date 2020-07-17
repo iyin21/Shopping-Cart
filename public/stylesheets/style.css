@@ -16,3 +16,10 @@
 .error{
 	margin-top: 5px;
 }
+.marg{
+	width: 500px;
+
+}
+.pad span .spec{
+	margin-right: 2px
+}

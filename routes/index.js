@@ -36,12 +36,21 @@ router.get("/add-to-cart/:id", function(req, res){
 	});
 });
 router.get("/shopping-cart", function(req, res){
-	if("!req.session.cart"){
-		return res.render("shop/shopping-cart", {books:null})
+	if(!req.session.cart){
+		return res.render("shop/shopping-cart", {books:null});
 	}
 	 var cart = new Cart(req.session.cart);
-	 return res.render("shop/shopping-cart", {books: cart.generateArray(), totalPrice: cart.totalPrice})
+	 res.render("shop/shopping-cart", {books: cart.generateArray(), totalPrice: cart.totalPrice})
 });
+router.get("/checkout", function(req, res){
+	if(!req.session.cart){
+		return res.redirect("shop/shopping-cart");
+	}
+	var cart = new Cart(req.session.cart);
+	res.render("shop/checkout", {total: cart.totalPrice});
+});
+router.post("/checkout", function(req, res){
 
+})
 
 module.exports = router;
