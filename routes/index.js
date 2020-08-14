@@ -49,79 +49,80 @@ router.get("/shopping-cart", function(req, res){
 	 var cart = new Cart(req.session.cart);
 	 res.render("shop/shopping-cart", {books: cart.generateArray(), totalPrice: cart.totalPrice})
 });
-router.get("/checkout", function(req, res){
-	if(!req.session.cart){
-		return res.redirect("shop/shopping-cart");
-	}
-	var cart = new Cart(req.session.cart);
-	res.render("shop/checkout", {total: cart.totalPrice});
-});
-router.post("/checkout", function(req, res){
-	var create_payment_json = {
-    "intent": "sale",
-    "payer": {
-        "payment_method": "paypal"
-    },
-    "redirect_urls": {
-        "return_url": "http://localhost:3000",
-        "cancel_url": "http://localhost:3000/checkout"
-    },
-    "transactions": [{
-        "item_list": {
-            "items": [{
-                "name": "item",
-                "sku": "item",
-                "price": "1.00",
-                "currency": "USD",
-                "quantity": 1
-            }]
-        },
-        "amount": {
-            "currency": "USD",
-            "total": "1.00"
-        },
-        "description": "This is the payment description."
-    }]
-};
+// router.get("/checkout", function(req, res){
+// 	if(!req.session.cart){
+// 		return res.redirect("shop/shopping-cart");
+// 	}
+// 	var cart = new Cart(req.session.cart);
+// 	res.render("shop/checkout", {total: cart.totalPrice});
+// });
+// router.post("/checkout", function(req, res){
+// });
+// 	var create_payment_json = {
+//     "intent": "sale",
+//     "payer": {
+//         "payment_method": "paypal"
+//     },
+//     "redirect_urls": {
+//         "return_url": "http://localhost:3000",
+//         "cancel_url": "http://localhost:3000/checkout"
+//     },
+//     "transactions": [{
+//         "item_list": {
+//             "items": [{
+//                 "name": "item",
+//                 "sku": "item",
+//                 "price": "1.00",
+//                 "currency": "USD",
+//                 "quantity": 1
+//             }]
+//         },
+//         "amount": {
+//             "currency": "USD",
+//             "total": "1.00"
+//         },
+//         "description": "This is the payment description."
+//     }]
+// };
 
-	paypal.payment.create(create_payment_json, function (error, payment){
-	    if (error) {
-	        throw error;
-	    } else {
-	        for(let i = 0; i< payment.links.length; i++){
-	        	if(payment.links[i].rel === 'approval_url'){
-	        		res.redirect(payment.links[i].href);
-	        	}
-	        // req.flash("success", "succesfully bought product");
-	        // req.cart= null;	
-	        }
-	    }
-	});
-	var payerId = req.query.PayerID;
-	var paymentId = req.query.paymentId;
+// 	paypal.payment.create(create_payment_json, function (error, payment){
+// 	    if (error) {
+// 	        throw error;
+// 	    } else {
+// 	        for(let i = 0; i< payment.links.length; i++){
+// 	        	if(payment.links[i].rel === 'approval_url'){
+// 	        		res.redirect(payment.links[i].href);
+// 	        	}
+// 	        // req.flash("success", "succesfully bought product");
+// 	        // req.cart= null;	
+// 	        }
+// 	    }
+// 	});
+// 	var payerId = req.query.PayerID;
+// 	var paymentId = req.query.paymentId;
 
-	var execute_payment_json = {
-	    "payer_id": "payerId",
-	    "transactions": [{
-	        "amount": {
-	            "currency": "USD",
-	            "total": "1.00"
-	        }
-	    }]
-	};
-	paypal.payment.execute(paymentId, execute_payment_json, function (error, payment) {
-	    if (error) {
-	        console.log(error.response);
-	        throw error;
-	    } else {
-	        console.log("Get Payment Response");
-	        console.log(JSON.stringify(payment));
-	        res.render("shop/index");
-	    }
-	});
+// 	var execute_payment_json = {
+// 	    "payer_id": "payerId",
+// 	    "transactions": [{
+// 	        "amount": {
+// 	            "currency": "USD",
+// 	            "total": "1.00"
+// 	        }
+// 	    }]
+// 	};
+// 	paypal.payment.execute(paymentId, execute_payment_json, function (error, payment) {
+// 	    if (error) {
+// 	        console.log(error.response);
+// 	        throw error;
+// 	    } else {
+// 	        console.log("Get Payment Response");
+// 	        console.log(JSON.stringify(payment));
+// 	        res.render("shop/index");
+// 	    }
+// 	});
 	
 
-});
+// });
 // router.get("/sucess", function(req, res){
 	
 
