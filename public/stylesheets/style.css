@@ -23,3 +23,15 @@
 .pad span .spec{
 	margin-right: 2px
 }
+@media screen and (max-width: 400px) {
+    #paypal-button-container {
+        width: 100%;
+    }
+}
+
+/* Media query for desktop viewport */
+@media screen and (min-width: 400px) {
+    #paypal-button-container {
+        width: 250px;
+    }
+}

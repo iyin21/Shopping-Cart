@@ -47,8 +47,9 @@ router.get("/shopping-cart", function(req, res){
 		return res.render("shop/shopping-cart", {books:null});
 	}
 	 var cart = new Cart(req.session.cart);
-	 res.render("shop/shopping-cart", {books: cart.generateArray(), totalPrice: cart.totalPrice})
+	 res.render("shop/shopping-cart", {books: cart.generateArray(), totalPrice: JSON.stringify(cart.totalPrice)})
 });
+
 // router.get("/checkout", function(req, res){
 // 	if(!req.session.cart){
 // 		return res.redirect("shop/shopping-cart");
@@ -57,33 +58,74 @@ router.get("/shopping-cart", function(req, res){
 // 	res.render("shop/checkout", {total: cart.totalPrice});
 // });
 // router.post("/checkout", function(req, res){
-// });
+// 	if(!req.session.cart){
+// 		return res.render("shop/shopping-cart", {books:null});
+// 	}
+// 	var cart = new Cart(req.session.cart);
 // 	var create_payment_json = {
-//     "intent": "sale",
-//     "payer": {
-//         "payment_method": "paypal"
-//     },
-//     "redirect_urls": {
-//         "return_url": "http://localhost:3000",
-//         "cancel_url": "http://localhost:3000/checkout"
-//     },
-//     "transactions": [{
-//         "item_list": {
-//             "items": [{
-//                 "name": "item",
-//                 "sku": "item",
-//                 "price": "1.00",
-//                 "currency": "USD",
-//                 "quantity": 1
-//             }]
-//         },
-//         "amount": {
-//             "currency": "USD",
-//             "total": "1.00"
-//         },
-//         "description": "This is the payment description."
-//     }]
-// };
+// 	    "intent": "sale",
+// 	    "payer": {
+// 	        "payment_method": "paypal"
+// 	    },
+// 	    "redirect_urls": {
+// 	        "return_url": "http://localhost:3000",
+// 	        "cancel_url": "http://localhost:3000/shopping-cart"
+// 	    },
+// 	    "transactions": [{
+// 	        "item_list": {
+// 	            "items": [{      
+// 	                "name": "All Books",
+// 	                "sku": cart._id,
+// 	                "price": cart.totalPrice,
+// 	                "currency": "USD",
+// 	                "quantity": cart.totalQty
+		            	
+// 	            }]
+// 	        },
+// 	        "amount": {
+// 	            "currency": "USD",
+// 	            "total": cart.totalPrice
+// 	        },
+// 	        "description": "This is the payment description."
+// 	    }]
+// 	};
+
+// 	paypal.payment.create(create_payment_json, function (error, payment){
+// 	    if (error) {
+// 	        throw error;
+// 	    } else {
+// 	        for(let i = 0; i< payment.links.length; i++){
+// 	        	if(payment.links[i].rel === 'approval_url'){
+// 	        		res.redirect(payment.links[i].href);
+// 	        	}
+// 	        // req.flash("success", "succesfully bought product");
+// 	        // req.cart= null;	
+// 	        }
+// 	    }
+// 	});
+// 	var payerId = req.query.PayerID;
+// 	var paymentId = req.query.paymentId;
+
+// 	var execute_payment_json = {
+// 	    "payer_id": "payerId",
+// 	    "transactions": [{
+// 	        "amount": {
+// 	            "currency": "USD",
+// 	            "total": cart.totalPrice
+// 	        }
+// 	    }]
+// 	};
+// 	paypal.payment.execute(paymentId, execute_payment_json, function (error, payment) {
+// 	    if (error) {
+// 	        console.log(error.response);
+// 	        throw error;
+// 	    } else {
+// 	        console.log("Get Payment Response");
+// 	        console.log(JSON.stringify(payment));
+// 	        res.render("shop/index");
+// 	    }
+// 	});
+// });
 
 // 	paypal.payment.create(create_payment_json, function (error, payment){
 // 	    if (error) {
