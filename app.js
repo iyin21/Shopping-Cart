@@ -67,7 +67,7 @@ app.use("/users", userRoutes);
 app.use("/", indexRoutes);
 
 
-app.listen(process.env.PORT || 3000, function(){
+app.listen(process.env.PORT || 5000, function(){
 	console.log("App running");
 });
 // // catch 404 and forward to error handler
