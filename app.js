@@ -23,8 +23,8 @@ var indexRoutes = require("./routes/index");
 var userRoutes = require("./routes/users")
 //database
 console.log(process.env.DATABASEURL);
-//mongoose.connect(process.env.DATABASEURL, {useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true });
-mongoose.connect("mongodb://localhost/cart", { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true });
+mongoose.connect(process.env.DATABASEURL, {useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true });
+//mongoose.connect("mongodb://localhost/cart", { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true });
 //mongoose.connect("mongodb+srv://Iyinoluwa:oluleke@books.olzyq.mongodb.net/books?retryWrites=true&w=majority", { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true });
 //view engine setup
 app.engine("hbs", hbs({defaultLayout: "layout", extname:".hbs"}));
