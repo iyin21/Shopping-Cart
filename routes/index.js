@@ -2,13 +2,24 @@ var express = require("express");
 var router = express.Router();
 var Book = require("../models/book");
 var Cart = require("../models/cart");
-var paypal = require('paypal-rest-sdk');
+//var paypal = require('paypal-rest-sdk');
+// 1. Set up your server to make calls to PayPal
 
-paypal.configure({
-  'mode': 'sandbox', //sandbox or live
-  'client_id': 'ASMvQeafoArGMg57vls5u1dYEBzarXEbaawj0UJBo-JUX-XypB9_2sQyTbksgi-LQROoNhktZny2hvDB',
-  'client_secret': 'EPOGKnKu5LVRWEgt-pSCOt2-bYshPriIzudBBuVwQ83xbOZADYH2U-JhQQP_u6DZxV-3k2dmE6QHv_zK'
-});
+// 1a. Import the SDK package
+const paypal = require('@paypal/checkout-server-sdk');
+
+// 1b. Import the PayPal SDK client that was created in `Set up Server-Side SDK`.
+/**
+ *
+ * PayPal HTTP client dependency
+ */
+const paypalClient = require('../paypal-client.js');
+
+// paypal.configure({
+//   'mode': 'sandbox', //sandbox or live
+//   'client_id': 'ASMvQeafoArGMg57vls5u1dYEBzarXEbaawj0UJBo-JUX-XypB9_2sQyTbksgi-LQROoNhktZny2hvDB',
+//   'client_secret': 'EPOGKnKu5LVRWEgt-pSCOt2-bYshPriIzudBBuVwQ83xbOZADYH2U-JhQQP_u6DZxV-3k2dmE6QHv_zK'
+// });
 // var passport = require("passport");
 // var {body, validationResult} = require("express-validator");
 // var User = require("../models/user");
@@ -49,125 +60,136 @@ router.get("/shopping-cart", function(req, res){
 	 var cart = new Cart(req.session.cart);
 	 res.render("shop/shopping-cart", {books: cart.generateArray(), totalPrice: JSON.stringify(cart.totalPrice)})
 });
-
-// router.get("/checkout", function(req, res){
-// 	if(!req.session.cart){
-// 		return res.redirect("shop/shopping-cart");
-// 	}
-// 	var cart = new Cart(req.session.cart);
-// 	res.render("shop/checkout", {total: cart.totalPrice});
-// });
-// router.post("/checkout", function(req, res){
+ router.get("/verify_transaction", function(req, res){
+ 	const ref= req.query.reference 
+ 	const https = require('https')
+	const options = {
+	  hostname: 'api.paystack.co',
+	  port: 443,
+	  path: '/transaction/verify/:ref',
+	  method: 'GET',
+	  headers: {
+	    Authorization: 'Bearer sk_test_964eb646e6f3eed17fc77b287789e827808ea80e'
+	  }
+	}
+	https.request(options, res => {
+	  let data = ''
+	  resp.on('data', (chunk) => {
+	    data += chunk
+	  });
+	  resp.on('end', () => {
+	    console.log(JSON.parse(data))
+	  })
+	}).on('error', error => {
+	  console.error(error)
+	})
+ 	req.flash("success", "Transaction successful")
+	req.session.cart = null;
+	res.redirect("/");
+ });
+// router.post("/shopping-cart", async (req, res) => {
 // 	if(!req.session.cart){
 // 		return res.render("shop/shopping-cart", {books:null});
 // 	}
-// 	var cart = new Cart(req.session.cart);
-// 	var create_payment_json = {
-// 	    "intent": "sale",
-// 	    "payer": {
-// 	        "payment_method": "paypal"
-// 	    },
-// 	    "redirect_urls": {
-// 	        "return_url": "http://localhost:3000",
-// 	        "cancel_url": "http://localhost:3000/shopping-cart"
-// 	    },
-// 	    "transactions": [{
-// 	        "item_list": {
-// 	            "items": [{      
-// 	                "name": "All Books",
-// 	                "sku": cart._id,
-// 	                "price": cart.totalPrice,
-// 	                "currency": "USD",
-// 	                "quantity": cart.totalQty
-		            	
-// 	            }]
-// 	        },
-// 	        "amount": {
-// 	            "currency": "USD",
-// 	            "total": cart.totalPrice
-// 	        },
-// 	        "description": "This is the payment description."
+// 	 var cart = new Cart(req.session.cart);
+// 	// 2a. Get the order ID from the request body
+// 	 // const orderID = req.body.orderID;
+// 	 // let request = new paypal.orders.OrdersGetRequest(orderID);
+// 	  // 3. Call PayPal to get the transaction details
+// 	  const request = new paypal.orders.OrdersCreateRequest();
+// 	  request.prefer("return=representation");
+// 	  request.requestBody({
+// 	    intent: 'CAPTURE',
+// 	    purchase_units: [{
+// 	      amount: {
+// 	        currency_code: 'USD',
+// 	        value: cart.totalPrice
+// 	      }
 // 	    }]
-// 	};
+// 	  });
 
-// 	paypal.payment.create(create_payment_json, function (error, payment){
-// 	    if (error) {
-// 	        throw error;
-// 	    } else {
-// 	        for(let i = 0; i< payment.links.length; i++){
-// 	        	if(payment.links[i].rel === 'approval_url'){
-// 	        		res.redirect(payment.links[i].href);
-// 	        	}
-// 	        // req.flash("success", "succesfully bought product");
-// 	        // req.cart= null;	
-// 	        }
-// 	    }
-// 	});
-// 	var payerId = req.query.PayerID;
-// 	var paymentId = req.query.paymentId;
+// 	  let order;
+// 	  try {
+// 	    order = await paypalClient.client().execute(request);
+// 	  } catch (err) {
 
-// 	var execute_payment_json = {
-// 	    "payer_id": "payerId",
-// 	    "transactions": [{
-// 	        "amount": {
-// 	            "currency": "USD",
-// 	            "total": cart.totalPrice
-// 	        }
-// 	    }]
-// 	};
-// 	paypal.payment.execute(paymentId, execute_payment_json, function (error, payment) {
-// 	    if (error) {
-// 	        console.log(error.response);
-// 	        throw error;
-// 	    } else {
-// 	        console.log("Get Payment Response");
-// 	        console.log(JSON.stringify(payment));
-// 	        res.render("shop/index");
-// 	    }
-// 	});
+// 	    // 4. Handle any errors from the call
+// 	    console.error(err);
+// 	    return res.sendStatus(500);
+// 	  }
+
+// 	  //5. Return a successful response to the client with the order ID
+// 	  res.json({
+// 	    orderID: order.result.id
+// 	  });
+// 	  console.log(order.result.id);
+	  // let order;
+	  // try {
+	  //   order = await paypalClient.client().execute(request);
+	  // } catch (err) {
+
+	  //   // 4. Handle any errors from the call
+	  //   console.error(err);
+	  //   return res.sendStatus(500);
+	  // }
+
+	  // // 5. Validate the transaction details are as expected
+	  // if (order.result.purchase_units[0].amount.value !== cart.totalPrice) {
+	  //   return res.sendStatus(400);
+	  // }
+
+	  // 6. Save the transaction in your database
+	  // await database.saveTransaction(orderID);
+
+	  // 7. Return a successful response to the client
+	  //return res.send(200); 
+
+	  // res.json({
+	  //   orderID: order.result.id
+	  // });
+	  // console.log(order.result.id);
+// });
+// router.post("/capture", async(req, res) => {
+// 	if(!req.session.cart){
+// 		return res.render("shop/shopping-cart", {books:null});
+// 	}
+// 	 var cart = new Cart(req.session.cart);
+// 	// 2a. Get the order ID from the request body
+// 	  let captureDetails= "";
+// 	  const orderID = req.body.orderID;
+
+// 	  // 3. Call PayPal to capture the order
+// 	  const request = new paypal.orders.OrdersCaptureRequest(orderID);
+// 	  request.requestBody({});
+
+// 	  try {
+// 	    const capture = await paypalClient.client().execute(request);
+
+// 	    // 4. Save the capture ID to your database. Implement logic to save capture to your database for future reference.
+// 	    const captureID = capture.result.purchase_units[0].payments.captures[0].id;
+// 	   // await database.saveCaptureID(captureID);
+// 	    //captureDetails = capture.result;
+//     // await database.saveCaptureID(captureID);
+//     	//res.json(captureDetails);
+
+// 	  } catch (err) {
+
+// 	    // 5. Handle any errors from the call
+// 	    console.error(err);
+// 	    return res.sendStatus(500);
+// 	  }
+
+// 	  // 6. Return a successful response to the client
+// 	  //res.send(200);
+// 	  res.json({ details: captureDetails });
+// 	  req.flash("success", "Transaction successful")
+// 	  req.session.cart = null;
+// 	  res.redirect("/");
+
+
 // });
 
-// 	paypal.payment.create(create_payment_json, function (error, payment){
-// 	    if (error) {
-// 	        throw error;
-// 	    } else {
-// 	        for(let i = 0; i< payment.links.length; i++){
-// 	        	if(payment.links[i].rel === 'approval_url'){
-// 	        		res.redirect(payment.links[i].href);
-// 	        	}
-// 	        // req.flash("success", "succesfully bought product");
-// 	        // req.cart= null;	
-// 	        }
-// 	    }
-// 	});
-// 	var payerId = req.query.PayerID;
-// 	var paymentId = req.query.paymentId;
-
-// 	var execute_payment_json = {
-// 	    "payer_id": "payerId",
-// 	    "transactions": [{
-// 	        "amount": {
-// 	            "currency": "USD",
-// 	            "total": "1.00"
-// 	        }
-// 	    }]
-// 	};
-// 	paypal.payment.execute(paymentId, execute_payment_json, function (error, payment) {
-// 	    if (error) {
-// 	        console.log(error.response);
-// 	        throw error;
-// 	    } else {
-// 	        console.log("Get Payment Response");
-// 	        console.log(JSON.stringify(payment));
-// 	        res.render("shop/index");
-// 	    }
-// 	});
 	
 
-// });
-// router.get("/sucess", function(req, res){
-	
-
-// })
 
 module.exports = router;

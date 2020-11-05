@@ -35,39 +35,52 @@
 			</div>
 			<button type="submit" class="btn btn-success" value="checkout">Buy now</button>
 		</form>
-		<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-			<input type="hidden" name="cmd" value="_s-xclick">
-			<input type="hidden" name="hosted_button_id" value="6JKAK9HDKE4FS">
-			<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_buynowCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-			<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-		</form>
-		<div id="paypal-button-container"></div>
-			<script src="https://www.paypal.com/sdk/js?client-id=sb&currency=USD" data-sdk-integration-source="button-factory"></script>
-			<script>
-			  paypal.Buttons({
-			      style: {
-			          shape: 'rect',
-			          color: 'gold',
-			          layout: 'vertical',
-			          label: 'paypal',
-			          
-			      },
-			      createOrder: function(data, actions) {
-			          return actions.order.create({
-			              purchase_units: [{
-			                  amount: {
-			                      value: '1'
-			                  }
-			              }]
-			          });
-			      },
-			      onApprove: function(data, actions) {
-			          return actions.order.capture().then(function(details) {
-			              alert('Transaction completed by ' + details.payer.name.given_name + '!');
-			          });
-			      }
-			  }).render('#paypal-button-container');
-			</script>
-
-	</div>
+		
 </div>			
+<form id="paymentForm">
+  <div class="form-group">
+    <label for="email">Email Address</label>
+    <input type="email" id="email-address" required />
+  </div>
+
+  <div class="form-group">
+    <label for="amount">Amount</label>
+  	<input type="tel" id="amount" required />
+  </div>
+  <div class="form-group">
+    <label for="first-name">First Name</label>    
+    <input type="text" id="first-name" />
+  </div>
+  <div class="form-group">
+    <label for="last-name">Last Name</label>
+    <input type="text" id="last-name" />
+  </div>
+  <div class="form-submit">
+    <button type="submit" onclick="payWithPaystack()"> Pay </button>
+  </div>
+</form>
+<script src="https://js.paystack.co/v1/inline.js"></script> 
+
+<script>
+	var totalPrice = {{{totalPrice}}};
+	const paymentForm = document.getElementById('paymentForm');
+	paymentForm.addEventListener("submit", payWithPaystack, false);
+	function payWithPaystack(e) {
+	  e.preventDefault();
+	  let handler = PaystackPop.setup({
+	    key: 'pk_test_179f97255508e5575179d8a9b0ae206cfce03735', // Replace with your public key
+	    email: document.getElementById("email-address").value,
+	    amount: totalPrice *100,
+	    ref: 'Books'+Math.floor((Math.random() * 1000000000) + 1), // generates a pseudo-unique reference. Please replace with a reference you generated. Or remove the line entirely so our API will generate one for you
+	    // label: "Optional string that replaces customer email"
+	    onClose: function(){
+	      alert('Window closed.');
+	    },
+	    callback: function(response){
+	      let message = 'Payment complete! Reference: ' + response.reference;
+	      alert(message);
+	    }
+	  });
+	  handler.openIframe();
+	}
+</script>

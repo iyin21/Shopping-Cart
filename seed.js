@@ -42,7 +42,7 @@ var data = [
 ];
 function seedDB(){
 	//remove all books
-	Book.deleteOne({}, function(err){
+	Book.deleteMany({}, function(err){
 		if(err){
 			console.log(err);
 		}

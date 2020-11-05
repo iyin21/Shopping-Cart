@@ -49,3 +49,51 @@ paypal.Buttons({
 // <p class="alert alert-info">Sorry, no products in your cart.</p>
 // <% } %>
 
+<script>
+  var totalPrice = {{{totalPrice}}};
+  paypal.Buttons({
+    style: {
+      layout: 'horizontal'
+    },
+    // Set up the transaction
+    createOrder: function(data, actions) {
+      //var totalPrice = JSON.parse(totalPrice);
+        return actions.order.create({
+            purchase_units: [{
+                amount: {
+                    
+                    value: totalPrice
+                    //currency_code: 'USD'
+                }
+            }]
+            
+        });
+    },
+    // Finalize the transaction
+    onApprove: function(data, actions) {
+    return fetch("http://localhost:5000/shopping-cart", {
+      method: "post",
+        headers: {
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify({
+          orderID: data.orderID
+        })
+      }).then(function(res) {
+        return res.json();
+      }).then(function(details) {
+        alert('Transaction approved by ' + details.payer_given_name);
+      });  
+
+    },  
+        //return actions.order.capture().then(function() {
+            // Show a success message to the buyer
+          //actions.redirect();
+          //document.location.href ="http://localhost:5000"
+            //alert('Transaction completed by ' + details.payer.name.given_name + '!');ions.redirect();
+            //window.location("http://localhost:5000/shopping-cart?orderID"+data.orderID);
+            //window.location.href= "/"
+        //});
+    //}
+  }).render('#paypal-button-container');
+</script>
