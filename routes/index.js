@@ -60,6 +60,13 @@ router.get("/shopping-cart", function(req, res){
 	 var cart = new Cart(req.session.cart);
 	 res.render("shop/shopping-cart", {books: cart.generateArray(), totalPrice: JSON.stringify(cart.totalPrice)})
 });
+router.get("/checkout", function(req, res){
+	if(!req.session.cart){
+		return res.render("shop/shopping-cart", {books:null});
+	}
+	 var cart = new Cart(req.session.cart);
+	 res.render("shop/checkout", {totalPrice: JSON.stringify(cart.totalPrice)})
+});
  router.get("/verify_transaction", function(req, res){
  	const ref= req.query.reference 
  	const https = require('https')

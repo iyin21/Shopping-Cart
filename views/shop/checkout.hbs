@@ -1,68 +1,28 @@
 <div class="row">
-	<div class="col-sm-6 col-md-4 offset-md-4 offset-sm-3">
-		<h1>Checkout</h1>
-		<h4>Your total: ${{total}}</h4>
-		<form action="/checkout" method="post" id="checkout">
-			<div class="form-group">
-				<label for="name">Name</label>
-				<input type="text" name="name" id="name" class="form-control" required>
-			</div>
-			<div class="form-group">
-				<label for="address">Address</label>
-				<input type="text" name="address" id="address" class="form-control" required>
-			</div>
-			<div class="form-group">
-				<label for="card-name">Card Holder Name</label>
-				<input type="text" name="card-name" id=card-namee" class="form-control" required>
-			</div>
-			<div class="form-group">
-				<label for="card-number">Credit Card Number</label>
-				<input type="number" name="card-number" id="card-number" class="form-control" required>
-			</div>
-			<div class="form-row">
-				<div class="form-group col-sm-6">
-					<label for="expiry-month">Expiration month</label>
-					<input type="text" name="expiry-month" id=expiry-month" class="form-control" required>
-				</div>
-				<div class="form-group col-sm-6">
-					<label for="expiry-year">Expiration year</label>
-					<input type="text" name="expiry-year" id=expiry-year" class="form-control" required>
-				</div>
-			</div>
-			<div class="form-group">
-				<label for="card-cvv">Card cvv</label>
-					<input type="text" name="card-cvv" id="card-cvv" class="form-control" required>
-			</div>
-			<button type="submit" class="btn btn-success" value="checkout">Buy now</button>
-		</form>
-		
-</div>			
-<form id="paymentForm">
-  <div class="form-group">
-    <label for="email">Email Address</label>
-    <input type="email" id="email-address" required />
-  </div>
-
-  <div class="form-group">
-    <label for="amount">Amount</label>
-  	<input type="tel" id="amount" required />
-  </div>
-  <div class="form-group">
-    <label for="first-name">First Name</label>    
-    <input type="text" id="first-name" />
-  </div>
-  <div class="form-group">
-    <label for="last-name">Last Name</label>
-    <input type="text" id="last-name" />
-  </div>
-  <div class="form-submit">
-    <button type="submit" onclick="payWithPaystack()"> Pay </button>
-  </div>
-</form>
+<div class="col-sm-6 col-md-4 offset-md-4 offset-sm-3">
+	<h1>Checkout</h1>
+	<h4>Your total: NGN{{totalPrice}}</h4>
+	<form id="paymentForm">
+		<div class="form-group">
+			<label for="email">Email Address</label>
+			<input type="text" name="email" id="email-address" class="form-control" required>
+		</div>
+		<div class="form-group">
+			<label for="first-name">First Name</label>
+			<input type="text" name="first-name" id="name" class="form-control" required>
+		</div>
+		<div class="form-group">
+			<label for="last-name">Last Name</label>
+			<input type="text" name="last-name" id="last-name" class="form-control" required>
+		</div>
+		<div class="form-submit">
+			<button type="submit" class="btn btn-success" onclick="payWithPaystack()"> Pay </button>
+		</div>
+	<form>
+</div>
 <script src="https://js.paystack.co/v1/inline.js"></script> 
-
 <script>
-	var totalPrice = {{{totalPrice}}};
+	const totalPrice = {{{totalPrice}}};
 	const paymentForm = document.getElementById('paymentForm');
 	paymentForm.addEventListener("submit", payWithPaystack, false);
 	function payWithPaystack(e) {
@@ -74,11 +34,15 @@
 	    ref: 'Books'+Math.floor((Math.random() * 1000000000) + 1), // generates a pseudo-unique reference. Please replace with a reference you generated. Or remove the line entirely so our API will generate one for you
 	    // label: "Optional string that replaces customer email"
 	    onClose: function(){
+	    	window.location="http://localhost:5000/shopping-cart?transaction=cancel"
 	      alert('Window closed.');
 	    },
 	    callback: function(response){
 	      let message = 'Payment complete! Reference: ' + response.reference;
 	      alert(message);
+	      window.location = "http://localhost:5000/verify_transaction?reference=" + response.reference;
+
+
 	    }
 	  });
 	  handler.openIframe();
