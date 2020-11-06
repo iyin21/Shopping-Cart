@@ -2,24 +2,8 @@ var express = require("express");
 var router = express.Router();
 var Book = require("../models/book");
 var Cart = require("../models/cart");
-//var paypal = require('paypal-rest-sdk');
-// 1. Set up your server to make calls to PayPal
-
-// 1a. Import the SDK package
-const paypal = require('@paypal/checkout-server-sdk');
-
-// 1b. Import the PayPal SDK client that was created in `Set up Server-Side SDK`.
-/**
- *
- * PayPal HTTP client dependency
- */
-const paypalClient = require('../paypal-client.js');
-
-// paypal.configure({
-//   'mode': 'sandbox', //sandbox or live
-//   'client_id': 'ASMvQeafoArGMg57vls5u1dYEBzarXEbaawj0UJBo-JUX-XypB9_2sQyTbksgi-LQROoNhktZny2hvDB',
-//   'client_secret': 'EPOGKnKu5LVRWEgt-pSCOt2-bYshPriIzudBBuVwQ83xbOZADYH2U-JhQQP_u6DZxV-3k2dmE6QHv_zK'
-// });
+var User = require("../models/user")
+var Order = require("../models/order")
 // var passport = require("passport");
 // var {body, validationResult} = require("express-validator");
 // var User = require("../models/user");
@@ -65,9 +49,13 @@ router.get("/checkout", function(req, res){
 		return res.render("shop/shopping-cart", {books:null});
 	}
 	 var cart = new Cart(req.session.cart);
-	 res.render("shop/checkout", {totalPrice: JSON.stringify(cart.totalPrice)})
+	 res.render("shop/checkout", {user:User, username: JSON.stringify(User.email), totalPrice: JSON.stringify(cart.totalPrice)})
 });
  router.get("/verify_transaction", function(req, res){
+ 	if(!req.session.cart){
+		return res.render("shop/shopping-cart", {books:null});
+	}
+	 var cart = new Cart(req.session.cart);
  	const ref= req.query.reference 
  	const https = require('https')
 	const options = {
@@ -86,9 +74,27 @@ router.get("/checkout", function(req, res){
 	  });
 	  resp.on('end', () => {
 	    console.log(JSON.parse(data))
+	    response = JSON.parse(data);
 	  })
 	}).on('error', error => {
 	  console.error(error)
+	})
+	var order = new Order({
+		user: req.user,
+		cart: cart,
+		name: req.body.name,
+		address: req.body.address,
+		reference: ref
+	});
+	order.save(function(err, result){
+		if(err){
+			console.log(err);
+			req.flash("error", "Something went wrong")
+		}else{
+			req.flash("success", "Transaction successful")
+			req.session.cart = null;
+			res.redirect("/");
+		}
 	})
  	req.flash("success", "Transaction successful")
 	req.session.cart = null;
