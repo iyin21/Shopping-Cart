@@ -44,7 +44,7 @@ router.get("/shopping-cart", function(req, res){
 	 var cart = new Cart(req.session.cart);
 	 res.render("shop/shopping-cart", {books: cart.generateArray(), totalPrice: JSON.stringify(cart.totalPrice)})
 });
-router.get("/checkout", function(req, res){
+router.get("/checkout", isLoggedIn, function(req, res){
 	if(!req.session.cart){
 		return res.render("shop/shopping-cart", {books:null});
 	}
@@ -80,9 +80,9 @@ router.get("/checkout", function(req, res){
 	    var order = new Order({
 			user: req.user,
 			cart: cart,
-			name: metadata.name,
-			address: metadata.address,
-			reference: reference
+			name: data.name,
+			address: data.address,
+			reference: data.reference
 		});
 		order.save(function(err, result){
 			if(err){
@@ -102,6 +102,15 @@ router.get("/checkout", function(req, res){
 	req.session.cart = null;
 	res.redirect("/");
  });
+ function isLoggedIn(req, res, next){
+	if (req.isAuthenticated()){
+		return next();
+	}
+	req.session.oldUrl = req.url;
+	req.flash("errors", "Please sign in first");
+	res.redirect('users/signin');
+}
+
 // router.post("/shopping-cart", async (req, res) => {
 // 	if(!req.session.cart){
 // 		return res.render("shop/shopping-cart", {books:null});

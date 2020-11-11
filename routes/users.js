@@ -39,7 +39,7 @@ router.post("/signup", [body("email", "Invalid email").isEmail(), body("password
 
 		// });
 		console.log(errorMessage);
-		return res.render("signup", {
+		return res.render("users/signup", {
 			error: errorMessage, //hasErrors: errorMessage.length >0
 			
 		})
@@ -49,10 +49,16 @@ router.post("/signup", [body("email", "Invalid email").isEmail(), body("password
 			if(err){
 				console.log(err);
 				req.flash("errors", err.message);
-				res.redirect("/users/signup");
+				return res.redirect("/");
 			}
 			passport.authenticate("local")(req, res, function(){
-				res.redirect("/users/profile");
+				if(req.session.oldUrl){
+					var oldUrl = req.session.oldUrl;
+					req.session.oldUrl = null;
+					res.redirect(req.session.oldUrl)
+				}else{
+					res.redirect("users/profile");
+				}
 			});
 		});
 
@@ -64,10 +70,15 @@ router.get("/signin", function(req, res){
 })
 router.post("/signin", passport.authenticate("local",
 	{
-		successRedirect: "/users/profile",
 		failureRedirect: "/users/signin",
 		failureFlash: true
-}), function(req, res){
+}), function(req, res, next){
+	if(req.session.oldUrl){
+		res.redirect(req.session.oldUrl)
+		req.session.oldUrl = null;
+	}else{
+		res.redirect("users/profile");
+	}
 
 });
 
