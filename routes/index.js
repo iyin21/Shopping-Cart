@@ -75,28 +75,30 @@ router.get("/checkout", function(req, res){
 	  resp.on('end', () => {
 	    console.log(JSON.parse(data))
 	    response = JSON.parse(data);
+	    const data = _.at(response.data, ['metadata.name', 'metadata.address', 'reference'])
+	    [name, address, reference] =  data;
+	    var order = new Order({
+			user: req.user,
+			cart: cart,
+			name: metadata.name,
+			address: metadata.address,
+			reference: reference
+		});
+		order.save(function(err, result){
+			if(err){
+				console.log(err);
+				req.flash("error", "Something went wrong")
+			}else{
+				req.flash("success", "Transaction successful")
+				req.session.cart = null;
+				res.redirect("/");
+			}
+		})
 	  })
 	}).on('error', error => {
 	  console.error(error)
 	})
-	var order = new Order({
-		user: req.user,
-		cart: cart,
-		name: req.body.name,
-		address: req.body.address,
-		reference: ref
-	});
-	order.save(function(err, result){
-		if(err){
-			console.log(err);
-			req.flash("error", "Something went wrong")
-		}else{
-			req.flash("success", "Transaction successful")
-			req.session.cart = null;
-			res.redirect("/");
-		}
-	})
- 	req.flash("success", "Transaction successful")
+	req.flash("success", "Transaction successful")
 	req.session.cart = null;
 	res.redirect("/");
  });
