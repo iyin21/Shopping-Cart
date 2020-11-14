@@ -9,7 +9,7 @@
 		</div>
 		<div class="form-group">
 			<label for="name">Full Name</label>
-			<input type="text" name="metadata" id="name" class="form-control" required>
+			<input type="text" name="name" id="name" class="form-control" required>
 		</div>
 		<div class="form-group">
 			<label for="address">Address</label>
@@ -37,11 +37,16 @@
 	    metadata: {
                    custom_fields: [
                       {
-                          name: document.getElementById("name").value,
-                          address: document.getElementById("address").value,
-
-                      }
+                          "display_name":"Full Name",
+      					  "variable_name":"name",
+      					  "value":document.getElementById("name").value
+                      },
+                      {
+                          "display_name":"Address",
+      					  "variable_name":"address",
+      					  "value":document.getElementById("address").value      				   }	  
                    ]
+                   //metadata = JSON.stringify(metadata);
                 },
 	    onClose: function(){
 	    	window.location="http://localhost:5000/shopping-cart?transaction=cancel"
